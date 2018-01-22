@@ -99,3 +99,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# json google oauth
+client_secret.json
