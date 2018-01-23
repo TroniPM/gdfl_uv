@@ -29,6 +29,8 @@ APPLICATION_NAME = 'GDFL_UPM'
 service = "" #usado para manter sessao
 PATH_DOWNLOAD = "./mydrive/"
 
+STRING_QUERY = "files(id, name, mimeType, version, fileExtension, size, parents)"
+
 def get_credentials():
     """Gets valid user credentials from storage.
 
@@ -82,6 +84,26 @@ def download_file(arquivo):
             status, done = downloader.next_chunk()
             print("Download %d."%int(status.progress() * 100))
 
+def download_all_folders():
+    global service
+    
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('drive', 'v3', http=http)
+    
+    page_token = None
+    while True:
+        response = service.files().list(q="mimeType='application/vnd.google-apps.folder'",
+                                              spaces='drive',
+                                              fields='nextPageToken, ' + STRING_QUERY,
+                                              pageToken=page_token).execute()
+        for file in response.get('files', []):
+            # Process change
+            print('Found file: %s (%s)' % (file.get('name'), file.get('id')))
+        page_token = response.get('nextPageToken', None)
+        if page_token is None:
+            break
+
 def main():
     global service
     qtd_files = 10
@@ -94,7 +116,7 @@ def main():
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('drive', 'v3', http=http)
 
-    ##results = service.files().list(pageSize=qtd_files,fields="nextPageToken, files(id, name, mimeType, version, fileExtension, size, parents)").execute()
+    ##results = service.files().list(pageSize=qtd_files,fields="nextPageToken, " + STRING_QUERY).execute()
     ##items = results.get('files', [])
 
     ####for test####
@@ -106,7 +128,7 @@ def main():
         print('No files found.')
     else:
         print('Files (%d):'%len(items))
-		#print("QUANTIDADE DOS ARQUIVOS: %s"%len(items))
+	#print("QUANTIDADE DOS ARQUIVOS: %s"%len(items))
         for item in items:
             arq = Arquivo(item)
             #print(arq)
@@ -114,10 +136,12 @@ def main():
             print(arq.name)
             print(arq.mimeType)
             print("isGDFile: " + str(arq.isGDFile))
+            print("isFolder: " + str(arq.isFolder))
             print("....:DOWNLOAD:....")
             download_file(arq)
             print()
 			
 if __name__ == '__main__':
-    main()
+    #main()
+    download_all_folders()
     a = raw_input("Press enter to exit")

@@ -6,6 +6,7 @@
   * About filese and folders: https://developers.google.com/drive/v3/web/manage-downloads
   * Query parameters: https://developers.google.com/drive/v3/web/search-parameters
   * Outh permissions: https://developers.google.com/drive/v3/web/about-auth
+  * workspace: https://developers.google.com/drive/v3/web/about-organization
 
 ### Libs
 you need to download these libs:
@@ -26,8 +27,9 @@ Want to contribute? Great! Send me a message.
 ### Todos
  - Write Tests
  - Download files
- - Check if file has changed (version file) on cloud
- - If file was changed in machine, send to cloud
+ - When download files, check by parents and create folders needed
+ - Check if file has changed (version file) on cloud every Xminutes/Xseconds
+ - If file was changed in local (current device), send to cloud
 
 ### License
 GLP 3.0
